@@ -1,6 +1,6 @@
 ##############################################################################
 # Variables File
-# 
+#
 # Here is where we store the default values for all the variables used in our
 # Terraform code. If you create a variable with no default, the user will be
 # prompted to enter it (or define it via config file or command line flags.)
@@ -26,7 +26,8 @@ variable "subnet_prefix" {
 
 variable "vm_size" {
   description = "Specifies the size of the virtual machine."
-  default     = "Standard_A0"
+  # default     = "Standard_A0" #Standard_B1s
+  default     = "Standard_B1s" #Standard_B1s
 }
 
 variable "image_publisher" {
