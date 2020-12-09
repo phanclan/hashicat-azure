@@ -5,6 +5,10 @@ provider "azurerm" {
 resource "azurerm_resource_group" "myresourcegroup" {
   name     = "${var.prefix}-workshop"
   location = var.location
+
+  tags = {
+    environment = "Production"
+  }
 }
 
 resource "azurerm_virtual_network" "vnet" {
@@ -117,6 +121,8 @@ resource "azurerm_virtual_machine" "catapp" {
   os_profile_linux_config {
     disable_password_authentication = false
   }
+
+  tags = {}
 }
 
 # We're using a little trick here so we can run the provisioner without
@@ -166,6 +172,8 @@ resource "null_resource" "configure-cat-app" {
       "sudo chown -R ${var.admin_username}:${var.admin_username} /var/www/html",
       "chmod +x *.sh",
       "PLACEHOLDER=${var.placeholder} WIDTH=${var.width} HEIGHT=${var.height} PREFIX=${var.prefix} ./deploy_app.sh",
+      "sudo apt -y install cowsay",
+      "cowsay Mooooooooooo!",
     ]
 
     connection {
