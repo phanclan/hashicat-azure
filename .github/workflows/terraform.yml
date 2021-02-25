@@ -18,7 +18,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+      # Setup Terraform. Installs latest version. Can specify version with "terraform_version". Specify a Terraform Cloud user API token
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
@@ -35,14 +35,19 @@ jobs:
         id: init
         run: terraform init
 
-      
+      # Generates a plan. This step only runs on PR's. On merge, the plan will be applied.
+      # Continue even if error. Allows next to display error message.
       - name: Terraform Plan
         id: plan
         if: github.event_name == 'pull_request'
         run: terraform plan -no-color
         continue-on-error: true
 
-      - uses: actions/github-script@0.9.0
+      # Add a comment to the pull request with the results of the format, init and plan steps.
+      # Display the plan output. Allows you to review results of the plan directly in PR instead of going to TFC.
+      # Only runs on pull requests.
+      - name: Update Pull Request
+        uses: actions/github-script@0.9.0
         if: github.event_name == 'pull_request'
         env:
           PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
@@ -63,6 +68,8 @@ jobs:
               repo: context.repo.repo,
               body: output
             })
+      
+      # Highlight whenever a plan fails because the "Terraform Plan" step continues on error.
       - name: Terraform Plan Status
         if: steps.plan.outcome == 'failure'
         run: exit 1
@@ -71,6 +78,7 @@ jobs:
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud".
       # See the documentation on "strict" required status checks for more information:
       # https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
+      # This step will only run when a commit is pushed to master.
       - name: Terraform Apply
         if: github.ref == 'refs/heads/master' && github.event_name == 'push'
         run: terraform apply -auto-approve
