@@ -4,7 +4,7 @@ terraform {
     organization = "pphan"
 
     workspaces {
-      name = "updated-tfc-backend"
+      name = "gh-actions-demo"
     }
   }
 }
