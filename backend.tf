@@ -4,7 +4,7 @@ terraform {
     organization = "pphan"
 
     workspaces {
-      name = "hashicat-azure"
+      name = "updated-tfc-backend"
     }
   }
 }
