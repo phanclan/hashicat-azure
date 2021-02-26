@@ -18,12 +18,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      # Download Terraform. Installs latest. Can specify version with "terraform_version".
+      # Download Terraform. Default to latest. Can specify version with "terraform_version".
       # Specify a Terraform Cloud user API token
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
-          # terraform_version: 0.13.0:
+          # terraform_version: ~0.13.0:
+          cli_config_credentials_hostname: 'app.terraform.io'
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
       # Checks that all Terraform configuration files adhere to a canonical format
