@@ -12,19 +12,23 @@ on:
 jobs:
   terraform:
     name: "Terraform"
-    runs-on: ubuntu-latest
+    # Virtual environment OS.
+    # runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
-      # Checkout the repository to the GitHub Actions runner
+      # Checkout the repo to the GitHub Actions runner
       - name: Checkout
         uses: actions/checkout@v2
 
       # Download Terraform. Default to latest. Can specify version with "terraform_version".
       # Specify a Terraform Cloud user API token
-      - name: Setup Terraform
+      - name: Terraform Setup
         uses: hashicorp/setup-terraform@v1
         with:
-          # terraform_version: ~0.13.0:
+          # If needed, pin terraform version.
+          # terraform_version: ~0.13.7
           cli_config_credentials_hostname: 'app.terraform.io'
+          # TF_API_TOKEN stored as GitHub Secret
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
       # Checks that all Terraform configuration files adhere to a canonical format

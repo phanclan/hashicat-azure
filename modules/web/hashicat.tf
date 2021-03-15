@@ -1,7 +1,7 @@
 resource "azurerm_network_interface" "catapp-nic" {
-  name                      = "${var.prefix}-catapp-nic"
-  location                  = var.location
-  resource_group_name       = data.terraform_remote_state.pphan_servicenow_hashicat_azure_network.outputs.rg_name
+  name                = "${var.prefix}-catapp-nic"
+  location            = var.location
+  resource_group_name = data.terraform_remote_state.pphan_servicenow_hashicat_azure_network.outputs.rg_name
   #azurerm_resource_group.myresourcegroup.name
   network_security_group_id = data.terraform_remote_state.pphan_servicenow_hashicat_azure_network.outputs.sg_id
 
