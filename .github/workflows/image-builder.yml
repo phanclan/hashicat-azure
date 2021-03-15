@@ -4,6 +4,8 @@ on: push
 jobs:
   build:
     runs-on: self-hosted
+    env:
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
     steps:
       - uses: actions/checkout@v2
       - name: Import Secrets
