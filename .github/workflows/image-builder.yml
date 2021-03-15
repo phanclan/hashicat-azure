@@ -1,6 +1,8 @@
 name: ImageBuilder
 # Run this workflow every time a new commit pushed to your repository
-on: push
+on:
+  push:
+    branches: [disable] # Switch to master to enable.
 jobs:
   build:
     runs-on: self-hosted
