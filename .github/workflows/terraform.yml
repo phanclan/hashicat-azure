@@ -18,24 +18,34 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      # Setup Terraform. Installs latest version. Can specify version with "terraform_version". Specify a Terraform Cloud user API token
+      # Download Terraform. Default to latest. Can specify version with "terraform_version".
+      # Specify a Terraform Cloud user API token
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
-          # terraform_version: 0.13.0:
+          # terraform_version: ~0.13.0:
+          cli_config_credentials_hostname: 'app.terraform.io'
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
       # Checks that all Terraform configuration files adhere to a canonical format
       - name: Terraform Format
         id: fmt
         run: terraform fmt -check
+        # run: terraform fmt -recursive .
 
-      # Initialize Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+      # Initialize Terraform. Create initial files, loads any remote state, downloads modules, etc.
       - name: Terraform Init
         id: init
-        run: terraform init
+        run: terraform init -input=false
+
+      # Checks that all Terraform configuration files adhere to a canonical format
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate
 
       # Generates a plan. This step only runs on PR's. On merge, the plan will be applied.
+      # The id value is used for reference in the comment step via "steps.plan.outputs.stdout"
+      # Note: Color is disabled to prevent messy characters from appearing in the pull request comment
       # Continue even if error. Allows next to display error message.
       - name: Terraform Plan
         id: plan
@@ -58,17 +68,19 @@ jobs:
             #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
             #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
             <details><summary>Show Plan</summary>
-            \`\`\`${process.env.PLAN}\`\`\`
+            \`\`\`
+            ${process.env.PLAN}
+            \`\`\`
             </details>
             *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
-              
+
             github.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: output
             })
-      
+
       # Highlight whenever a plan fails because the "Terraform Plan" step continues on error.
       - name: Terraform Plan Status
         if: steps.plan.outcome == 'failure'
@@ -81,4 +93,4 @@ jobs:
       # This step will only run when a commit is pushed to master.
       - name: Terraform Apply
         if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-        run: terraform apply -auto-approve
+        run: terraform apply -input=false -auto-approve

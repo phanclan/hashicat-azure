@@ -22,7 +22,7 @@ variable "address_space" {
 
 variable "subnet_prefix" {
   description = "The address prefix to use for the subnet."
-  default     = "10.0.10.0/24"
+  default     = ["10.0.10.0/24"]
 }
 
 variable "vm_size" {
