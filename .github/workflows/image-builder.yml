@@ -11,7 +11,7 @@ jobs:
         with:
           url: http://127.0.0.1:8200
           tlsSkipVerify: true
-          token: \${{ secrets.VAULT_TOKEN }}
+          token: ${{ secrets.VAULT_TOKEN }}
           secrets: |
             secret/data/ci app_secret
       - name: Build Docker Image
