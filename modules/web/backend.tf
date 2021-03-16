@@ -1,10 +1,10 @@
-terraform {
-  backend "remote" {
-    hostname     = "app.terraform.io"
-    organization = "pphan-servicenow"
+# terraform {
+#   backend "remote" {
+#     hostname     = "app.terraform.io"
+#     organization = "pphan-servicenow"
 
-    workspaces {
-      name = "hashicat-azure-web"
-    }
-  }
-}
+#     workspaces {
+#       name = "hashicat-azure-web"
+#     }
+#   }
+# }
