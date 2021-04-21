@@ -9,7 +9,7 @@ variable "prefix" {
   description = "This prefix will be included in the name of most resources."
 }
 
-variable "location" {
+variable "region" {
   description = "The region where the virtual network is created."
   default     = "centralus"
 }
@@ -21,7 +21,11 @@ variable "address_space" {
 
 variable "subnet_prefix" {
   description = "The address prefix to use for the subnet."
-  default     = "10.0.10.0/24"
+  default     = ["10.0.10.0/24"]
+}
+
+variable "subnet_names" {
+
 }
 
 variable "vm_size" {
@@ -72,4 +76,21 @@ variable "width" {
 variable "placeholder" {
   default     = "placekitten.com"
   description = "Image-as-a-service URL. Some other fun ones to try are fillmurray.com, placecage.com, placebeard.it, loremflickr.com, baconmockup.com, placeimg.com, placebear.com, placeskull.com, stevensegallery.com, placedog.net"
+}
+
+variable "resource_group_name" {
+  description = "The name of an existing resource group to be imported."
+}
+
+variable "tags" {
+  description = "The tags to associate with your network and subnets."
+  type        = map(string)
+
+  default = {
+    environment = "dev"
+  }
+}
+
+variable "vnet_name" {
+  description = "Name of the vnet to create."
 }

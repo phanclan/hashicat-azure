@@ -1,34 +1,28 @@
-resource "azurerm_resource_group" "myresourcegroup" {
-  name     = "${var.prefix}-workshop"
-  location = var.location
-
-  tags = {
-    environment = "Production"
-  }
+#https://github.com/Azure/terraform-azurerm-network/blob/master/main.tf
+data "azurerm_resource_group" "network" {
+  name = var.resource_group_name
 }
 
-# data "azurerm_resource_group" "network" {
-#   name = azurerm_resource_group.myresourcegroup.name #var.resource_group_name
-# }
-
 resource "azurerm_virtual_network" "vnet" {
-  name                = "${var.prefix}-vnet"
-  location            = azurerm_resource_group.myresourcegroup.location
+  name                = var.vnet_name #"${var.prefix}-vnet"
+  location            = data.azurerm_resource_group.network.location
   address_space       = [var.address_space]
-  resource_group_name = azurerm_resource_group.myresourcegroup.name # data.azurerm_resource_group.network.name
+  resource_group_name = data.azurerm_resource_group.network.name #azurerm_resource_group.this.name
+  tags                = var.tags
 }
 
 resource "azurerm_subnet" "subnet" {
-  name                 = "${var.prefix}-subnet"
+  for_each = var.subnet_names
+  name                 = each.key #"${var.prefix}-subnet"
+  address_prefixes       = [each.value] #var.subnet_prefix
+  resource_group_name  = data.azurerm_resource_group.network.name #azurerm_resource_group.this.name
   virtual_network_name = azurerm_virtual_network.vnet.name
-  resource_group_name  = azurerm_resource_group.myresourcegroup.name
-  address_prefix       = var.subnet_prefix
 }
 
 resource "azurerm_network_security_group" "catapp-sg" {
   name                = "${var.prefix}-sg"
-  location            = var.location
-  resource_group_name = azurerm_resource_group.myresourcegroup.name
+  location            = var.region
+  resource_group_name = data.azurerm_resource_group.network.name #azurerm_resource_group.this.name
 
   security_rule {
     name                       = "HTTP"
@@ -65,4 +59,16 @@ resource "azurerm_network_security_group" "catapp-sg" {
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
+  security_rule {
+    name                       = "NOMAD"
+    priority                   = 104
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "4646"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+
 }

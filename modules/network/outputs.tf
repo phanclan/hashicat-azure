@@ -1,14 +1,5 @@
-output "rg_name" {
-  description = "The ids of subnets created inside the newl vNet"
-  value       = azurerm_resource_group.myresourcegroup.name
-}
-
 output "sg_id" {
   value = azurerm_network_security_group.catapp-sg.id
-}
-
-output "subnet_id" {
-  value = azurerm_subnet.subnet.id
 }
 
 output "vnet_id" {
@@ -32,6 +23,11 @@ output "vnet_address_space" {
 }
 
 output "vnet_subnets" {
-  description = "The ids of subnets created inside the newl vNet"
-  value       = azurerm_subnet.subnet.*.id
+  description = "The ids of subnets created inside the newly vNet"
+  value       = {for k, v in azurerm_subnet.subnet : k => v.id} #azurerm_subnet.subnet.*.id
+}
+
+output "vnet_subnets_prefixes" {
+  description = "The ids of subnets created inside the newly vNet"
+  value       = {for k, v in azurerm_subnet.subnet : k => v.address_prefixes} #azurerm_subnet.subnet.*.id
 }
